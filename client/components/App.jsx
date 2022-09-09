@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getWidgets } from '../apiClient'
 import Widget from './Widget'
+import WidgetRedux from './WidgetRedux'
 
 function App() {
   const [widget, setWidgets] = useState([])
@@ -19,6 +20,7 @@ function App() {
 
   return (
     <div>
+      <WidgetRedux />
       <h1>Widgets for the win!</h1>
       {widget.map((widgetData) => {
         return <Widget widgetData={widgetData} key={widgetData.id} />
