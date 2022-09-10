@@ -116,11 +116,13 @@ function saveWidget(formData) {
   const {
     name,
     price,
+    mfg,
     inStock
   } = formData;
   return superagent__WEBPACK_IMPORTED_MODULE_0___default().post(rootUrl).send({
     name,
     price,
+    mfg,
     inStock
   }).then(res => {
     console.log(res.body);
