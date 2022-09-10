@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { deleteWidget, addWidget } from '../actions/index'
 import { getWidgets } from '../apiClient'
@@ -12,14 +12,9 @@ function Widgets(props) {
     inStock: 0,
   }
   const [form, setForm] = useState(initialData)
-  const [widgetState, setWidgetState] = useState()
   const widgets = useSelector((state) => state.widgets)
   const widget = props.name
   const dispatch = useDispatch()
-
-  useEffect(() => {
-    setWidgetState(widgets)
-  }, [widgets])
 
   function handleChange(e) {
     // 'e' for 'event'
@@ -31,8 +26,9 @@ function Widgets(props) {
   function handleSubmit(e) {
     e.preventDefault()
     console.log('I am a widget', widget)
-    dispatch(addWidget(widget, form))
+    dispatch(addWidget(form))
     setForm(initialData)
+    console.log('show me the shape of you', widgets)
   }
 
   function handleClick() {
@@ -70,7 +66,7 @@ function Widgets(props) {
             name="inStock"
           />
         </label>
-        {/* <button type="submit">Modify</button> */}
+        <button type="submit">Add my Widget</button>
       </form>
     </div>
   )

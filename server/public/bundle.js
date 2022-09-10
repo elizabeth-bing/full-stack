@@ -172,13 +172,9 @@ function Widgets(props) {
     inStock: 0
   };
   const [form, setForm] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(initialData);
-  const [widgetState, setWidgetState] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const widgets = (0,react_redux__WEBPACK_IMPORTED_MODULE_1__.useSelector)(state => state.widgets);
   const widget = props.name;
   const dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_1__.useDispatch)();
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    setWidgetState(widgets);
-  }, [widgets]);
 
   function handleChange(e) {
     // 'e' for 'event'
@@ -195,8 +191,9 @@ function Widgets(props) {
   function handleSubmit(e) {
     e.preventDefault();
     console.log('I am a widget', widget);
-    dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.addWidget)(widget, form));
+    dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.addWidget)(form));
     setForm(initialData);
+    console.log('show me the shape of you', widgets);
   }
 
   function handleClick() {
@@ -233,7 +230,9 @@ function Widgets(props) {
     onChange: handleChange,
     value: form.inStock,
     name: "inStock"
-  }))));
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+    type: "submit"
+  }, "Add my Widget")));
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Widgets);
@@ -256,7 +255,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const reducer = (0,redux__WEBPACK_IMPORTED_MODULE_1__.combineReducers)({
-  wombats: _widgets__WEBPACK_IMPORTED_MODULE_0__["default"]
+  widgets: _widgets__WEBPACK_IMPORTED_MODULE_0__["default"]
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (reducer);
 
@@ -286,13 +285,14 @@ const widgetReducer = function () {
   let action = arguments.length > 1 ? arguments[1] : undefined;
   const {
     type,
-    payload
+    payload,
+    widget
   } = action;
 
   switch (type) {
     case 'ADD_WIDGET':
       // console.log('Why no adding')
-      return [...state, payload];
+      return [...state, widget];
 
     case 'DEL_WIDGET':
       // console.log('deleting?')
