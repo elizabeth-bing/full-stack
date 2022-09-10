@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteWidget, addWidget } from '../actions/index'
+import { deleteWidget, sendWidget } from '../actions/index'
 import { getWidgets } from '../apiClient'
 
 function Widgets(props) {
@@ -26,7 +26,8 @@ function Widgets(props) {
   function handleSubmit(e) {
     e.preventDefault()
     console.log('I am a widget', widget)
-    dispatch(addWidget(form))
+    console.log('show me the FORM', form)
+    dispatch(sendWidget(form)) //hi gerard
     setForm(initialData)
     console.log('show me the shape of you', widgets)
   }

@@ -1,9 +1,7 @@
-// Example action creator:
-
-// let nextWordId = 0
+import { saveWidget } from '../apis/apiClient'
 
 export function addWidget(name) {
-  console.log('name me please')
+  console.log('name me please', name)
   return {
     type: 'ADD_WIDGET',
     payload: name,
@@ -23,5 +21,14 @@ export function updateWidget(oldBat, newBat) {
   return {
     type: 'UPDATE_WIDGET',
     payload: { oldBat, newBat },
+  }
+}
+
+export function sendWidget(formData) {
+  return (dispatch) => {
+    return saveWidget(formData).then((para) => {
+      // console.log(para)
+      dispatch(addWidget(para))
+    })
   }
 }

@@ -9,11 +9,11 @@ const initialWidgetState = [
 ]
 
 const widgetReducer = (state = initialWidgetState, action) => {
-  const { type, payload, widget } = action
+  const { type, payload } = action
   switch (type) {
     case 'ADD_WIDGET':
       // console.log('Why no adding')
-      return [...state, widget]
+      return payload
     case 'DEL_WIDGET':
       // console.log('deleting?')
       return state.filter((widget) => widget !== payload)

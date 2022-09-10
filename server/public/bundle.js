@@ -12,12 +12,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addWidget": () => (/* binding */ addWidget),
 /* harmony export */   "deleteWidget": () => (/* binding */ deleteWidget),
+/* harmony export */   "sendWidget": () => (/* binding */ sendWidget),
 /* harmony export */   "updateWidget": () => (/* binding */ updateWidget)
 /* harmony export */ });
-// Example action creator:
-// let nextWordId = 0
+/* harmony import */ var _apis_apiClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../apis/apiClient */ "./client/apis/apiClient.js");
+
 function addWidget(name) {
-  console.log('name me please');
+  console.log('name me please', name);
   return {
     type: 'ADD_WIDGET',
     payload: name
@@ -38,6 +39,14 @@ function updateWidget(oldBat, newBat) {
       oldBat,
       newBat
     }
+  };
+}
+function sendWidget(formData) {
+  return dispatch => {
+    return (0,_apis_apiClient__WEBPACK_IMPORTED_MODULE_0__.saveWidget)(formData).then(para => {
+      // console.log(para)
+      dispatch(addWidget(para));
+    });
   };
 }
 
@@ -66,6 +75,41 @@ function getWidgets() {
 }
 function addWidget() {
   return superagent__WEBPACK_IMPORTED_MODULE_0___default().post(widgetUrl);
+}
+
+/***/ }),
+
+/***/ "./client/apis/apiClient.js":
+/*!**********************************!*\
+  !*** ./client/apis/apiClient.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "saveWidget": () => (/* binding */ saveWidget)
+/* harmony export */ });
+/* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! superagent */ "./node_modules/superagent/lib/client.js");
+/* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(superagent__WEBPACK_IMPORTED_MODULE_0__);
+
+const rootUrl = '/api/v1/widgets'; // -----------------STEP 3a-----------------------post the sentence through the back end then returns it in a res.body
+
+function saveWidget(formData) {
+  console.log('api', formData);
+  const {
+    name,
+    price,
+    inStock
+  } = formData;
+  return superagent__WEBPACK_IMPORTED_MODULE_0___default().post(rootUrl).send({
+    name,
+    price,
+    inStock
+  }).then(res => {
+    console.log(res.body);
+    return res.body;
+  });
 }
 
 /***/ }),
@@ -191,7 +235,9 @@ function Widgets(props) {
   function handleSubmit(e) {
     e.preventDefault();
     console.log('I am a widget', widget);
-    dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.addWidget)(form));
+    console.log('show me the FORM', form);
+    dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.sendWidget)(form)); //hi gerard
+
     setForm(initialData);
     console.log('show me the shape of you', widgets);
   }
@@ -285,14 +331,13 @@ const widgetReducer = function () {
   let action = arguments.length > 1 ? arguments[1] : undefined;
   const {
     type,
-    payload,
-    widget
+    payload
   } = action;
 
   switch (type) {
     case 'ADD_WIDGET':
       // console.log('Why no adding')
-      return [...state, widget];
+      return payload;
 
     case 'DEL_WIDGET':
       // console.log('deleting?')
@@ -33728,6 +33773,52 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/redux-thunk/es/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/redux-thunk/es/index.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/** A function that accepts a potential "extra argument" value to be injected later,
+ * and returns an instance of the thunk middleware that uses that value
+ */
+function createThunkMiddleware(extraArgument) {
+  // Standard Redux middleware definition pattern:
+  // See: https://redux.js.org/tutorials/fundamentals/part-4-store#writing-custom-middleware
+  var middleware = function middleware(_ref) {
+    var dispatch = _ref.dispatch,
+        getState = _ref.getState;
+    return function (next) {
+      return function (action) {
+        // The thunk middleware looks for any functions that were passed to `store.dispatch`.
+        // If this "action" is really a function, call it and return the result.
+        if (typeof action === 'function') {
+          // Inject the store's `dispatch` and `getState` methods, as well as any "extra arg"
+          return action(dispatch, getState, extraArgument);
+        } // Otherwise, pass the action down the middleware chain as usual
+
+
+        return next(action);
+      };
+    };
+  };
+
+  return middleware;
+}
+
+var thunk = createThunkMiddleware(); // Attach the factory function so users can create a customized version
+// with whatever "extra arg" they want to inject into their thunks
+
+thunk.withExtraArgument = createThunkMiddleware;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (thunk);
+
+/***/ }),
+
 /***/ "./node_modules/redux/es/redux.js":
 /*!****************************************!*\
   !*** ./node_modules/redux/es/redux.js ***!
@@ -38536,16 +38627,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 /* harmony import */ var _reducers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./reducers */ "./client/reducers/index.js");
 /* harmony import */ var _components_App__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/App */ "./client/components/App.jsx");
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+/* harmony import */ var redux_thunk__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 
 
 
 
 
 
-const store = (0,redux__WEBPACK_IMPORTED_MODULE_5__.createStore)(_reducers__WEBPACK_IMPORTED_MODULE_3__["default"], window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux__WEBPACK_IMPORTED_MODULE_5__.compose;
+const store = (0,redux__WEBPACK_IMPORTED_MODULE_5__.createStore)(_reducers__WEBPACK_IMPORTED_MODULE_3__["default"], composeEnhancers((0,redux__WEBPACK_IMPORTED_MODULE_5__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_6__["default"])));
 document.addEventListener('DOMContentLoaded', () => {
   (0,react_dom__WEBPACK_IMPORTED_MODULE_1__.render)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_redux__WEBPACK_IMPORTED_MODULE_2__.Provider, {
     store: store
