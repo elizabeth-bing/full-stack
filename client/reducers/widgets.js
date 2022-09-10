@@ -13,10 +13,14 @@ const widgetReducer = (state = initialWidgetState, action) => {
   switch (type) {
     case 'ADD_WIDGET':
       // console.log('Why no adding')
-      return payload
+      //thoughts on new twice album gerard
+      return [...state, payload]
     case 'DEL_WIDGET':
       // console.log('deleting?')
       return state.filter((widget) => widget !== payload)
+
+    case 'GET_ALL_WIDGETS':
+      return payload
 
     case 'UPDATE_WIDGET':
       return state.map((widget) => {

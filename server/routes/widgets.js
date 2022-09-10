@@ -13,30 +13,13 @@ router.get('/', (req, res) => {
     })
 })
 
-// router.post('/', (req, res) => {
-//   const post = {
-//     ...req.body,
-//   }
-
-//   db.addWidgets(post)
-//     .then(() => {
-//       // const newWidgetId = ids[0]
-//       return db.getWidgets()
-//     })
-//     .then((newWidget) => {
-//       res.json(newWidget)
-//     })
-//     .catch((err) => {
-//       res.status(500).send(err.message)
-//     })
-// })
-
 router.post('/', (req, res) => {
   const widgetData = req.body
-  console.log('req.body', req.body)
+
   db.addWidgets(widgetData)
-    .then(() => {
-      res.json({ widgetData })
+    .then((array) => {
+      const id = array[0]
+      res.json({ ...widgetData, id })
       // res.json({ fruits: results.map((fruit) => fruit.name) })
     })
     .catch((err) => {

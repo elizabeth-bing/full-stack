@@ -12,6 +12,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addWidget": () => (/* binding */ addWidget),
 /* harmony export */   "deleteWidget": () => (/* binding */ deleteWidget),
+/* harmony export */   "getAll": () => (/* binding */ getAll),
+/* harmony export */   "getAllWidgetsPlease": () => (/* binding */ getAllWidgetsPlease),
 /* harmony export */   "sendWidget": () => (/* binding */ sendWidget),
 /* harmony export */   "updateWidget": () => (/* binding */ updateWidget)
 /* harmony export */ });
@@ -41,11 +43,25 @@ function updateWidget(oldBat, newBat) {
     }
   };
 }
+function getAllWidgetsPlease(allWidgetData) {
+  return {
+    type: 'GET_ALL_WIDGETS',
+    payload: allWidgetData
+  };
+} //-----------------------------------------------
+
 function sendWidget(formData) {
   return dispatch => {
-    return (0,_apis_apiClient__WEBPACK_IMPORTED_MODULE_0__.saveWidget)(formData).then(para => {
+    return (0,_apis_apiClient__WEBPACK_IMPORTED_MODULE_0__.saveWidget)(formData).then(thunkData => {
       // console.log(para)
-      dispatch(addWidget(para));
+      dispatch(addWidget(thunkData));
+    });
+  };
+}
+function getAll() {
+  return dispatch => {
+    return (0,_apis_apiClient__WEBPACK_IMPORTED_MODULE_0__.getAllWidgets)().then(allWidgetData => {
+      dispatch(getAllWidgetsPlease(allWidgetData));
     });
   };
 }
@@ -88,6 +104,7 @@ function addWidget() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAllWidgets": () => (/* binding */ getAllWidgets),
 /* harmony export */   "saveWidget": () => (/* binding */ saveWidget)
 /* harmony export */ });
 /* harmony import */ var superagent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! superagent */ "./node_modules/superagent/lib/client.js");
@@ -96,7 +113,6 @@ __webpack_require__.r(__webpack_exports__);
 const rootUrl = '/api/v1/widgets'; // -----------------STEP 3a-----------------------post the sentence through the back end then returns it in a res.body
 
 function saveWidget(formData) {
-  console.log('api', formData);
   const {
     name,
     price,
@@ -108,6 +124,12 @@ function saveWidget(formData) {
     inStock
   }).then(res => {
     console.log(res.body);
+    return res.body;
+  });
+}
+function getAllWidgets() {
+  return superagent__WEBPACK_IMPORTED_MODULE_0___default().get(rootUrl).then(res => {
+    console.log('add', res.body);
     return res.body;
   });
 }
@@ -126,27 +148,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _apiClient__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../apiClient */ "./client/apiClient.js");
-/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Widget */ "./client/components/Widget.jsx");
-/* harmony import */ var _WidgetRedux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WidgetRedux */ "./client/components/WidgetRedux.jsx");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions */ "./client/actions/index.js");
+/* harmony import */ var _apiClient__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../apiClient */ "./client/apiClient.js");
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Widget */ "./client/components/Widget.jsx");
+/* harmony import */ var _WidgetRedux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WidgetRedux */ "./client/components/WidgetRedux.jsx");
+
+
 
 
 
 
 
 function App() {
-  const [widget, setWidgets] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-  console.log('render');
+  // const [widget, setWidgets] = useState([])
+  console.log('render'); //state.widgets = line 6 in reducer file
+
+  const widget = (0,react_redux__WEBPACK_IMPORTED_MODULE_1__.useSelector)(state => state.widgets);
+  const dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_1__.useDispatch)();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    console.log('using the effect');
-    (0,_apiClient__WEBPACK_IMPORTED_MODULE_1__.getWidgets)().then(res => {
-      setWidgets(res.body);
-    }).catch(err => {
-      console.error(err.message);
-    });
+    dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.getAll)());
   }, []);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_WidgetRedux__WEBPACK_IMPORTED_MODULE_3__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h1", null, "Widgets for the win!"), widget.map(widgetData => {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Widget__WEBPACK_IMPORTED_MODULE_2__["default"], {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_WidgetRedux__WEBPACK_IMPORTED_MODULE_5__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h1", null, "Widgets for the win!"), widget.map(widgetData => {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Widget__WEBPACK_IMPORTED_MODULE_4__["default"], {
       widgetData: widgetData,
       key: widgetData.id
     });
@@ -337,11 +361,15 @@ const widgetReducer = function () {
   switch (type) {
     case 'ADD_WIDGET':
       // console.log('Why no adding')
-      return payload;
+      //thoughts on new twice album gerard
+      return [...state, payload];
 
     case 'DEL_WIDGET':
       // console.log('deleting?')
       return state.filter(widget => widget !== payload);
+
+    case 'GET_ALL_WIDGETS':
+      return payload;
 
     case 'UPDATE_WIDGET':
       return state.map(widget => {
